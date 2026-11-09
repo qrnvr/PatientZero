@@ -55,7 +55,36 @@ public class Marker {
      * Example: a = "ACGTAC", b = "TTACGT", k = 4: the words of a are ACGT, CGTA, GTAC; only ACGT is in b, so the answer is 1.
      */
     public static int sharedWords(String a, String b, int k) {
-        // TODO Mission 4
-        return -1;
+        int n = a.length(), m = b.length();
+        if (k <= 0 || n < k || m < k) return 0;
+        final long MOD = 1_000_000_007L, BASE = 131L;
+        long top = 1;   // BASE^(k-1) mod MOD, the weight of the oldest letter of a window
+        for (int i = 1; i < k; i++) top = top * BASE % MOD;
+
+        // hashes of all windows of b: hash -> start positions in b
+        HashMap<Long, List<Integer>> windows = new HashMap<>();
+        long h = 0;
+        for (int i = 0; i < m; i++) {
+            if (i >= k) h = ((h - b.charAt(i - k) * top % MOD) % MOD + MOD) % MOD;   // drop the oldest letter
+            h = (h * BASE + b.charAt(i)) % MOD;                                      // add the new letter
+            if (i >= k - 1) windows.computeIfAbsent(h, x -> new ArrayList<>()).add(i - k + 1);
+        }
+
+        int count = 0;
+        h = 0;
+        for (int i = 0; i < n; i++) {
+            if (i >= k) h = ((h - a.charAt(i - k) * top % MOD) % MOD + MOD) % MOD;
+            h = (h * BASE + a.charAt(i)) % MOD;
+            if (i < k - 1) continue;
+            int start = i - k + 1;
+            List<Integer> candidates = windows.get(h);
+            if (candidates == null) continue;
+            for (int pos : candidates) {   // equal hashes do not prove equal words: compare the letters
+                int j = 0;
+                while (j < k && a.charAt(start + j) == b.charAt(pos + j)) j++;
+                if (j == k) { count++; break; }
+            }
+        }
+        return count;
     }
 }

@@ -17,8 +17,34 @@ public class Outbreak {
      * Main calls this twice: with all costs equal to 1 (the line "Tests needed") and with the real costs ("Cheapest testing").
      */
     public static boolean[] cheapestTests(int n, int[][] nb, int[] cost) {
-        // TODO Mission 5a
-        return new boolean[n];
+        int[] in = new int[n];    // cheapest cost of the subtree of v when v IS tested
+        int[] out = new int[n];   // cheapest cost of the subtree of v when v is NOT tested
+        fill(0, -1, nb, cost, in, out);
+        boolean[] tested = new boolean[n];
+        pick(0, -1, in[0] <= out[0], nb, in, out, tested);
+        return tested;
+    }
+
+    // post-order DFS: children first, then v. "parent" is where we came from (the links have no direction).
+    private static void fill(int v, int parent, int[][] nb, int[] cost, int[] in, int[] out) {
+        in[v] = cost[v];
+        out[v] = 0;
+        for (int c : nb[v]) {
+            if (c == parent) continue;
+            fill(c, v, nb, cost, in, out);
+            in[v] += Math.min(in[c], out[c]);   // v tested: every child is free to choose
+            out[v] += in[c];                    // v not tested: every child must be tested
+        }
+    }
+
+    // top-down: rebuild who is tested with the same rule
+    private static void pick(int v, int parent, boolean isTested, int[][] nb, int[] in, int[] out, boolean[] tested) {
+        tested[v] = isTested;
+        for (int c : nb[v]) {
+            if (c == parent) continue;
+            boolean childTested = isTested ? in[c] <= out[c] : true;
+            pick(c, v, childTested, nb, in, out, tested);
+        }
     }
 
     /**
@@ -27,7 +53,21 @@ public class Outbreak {
      * Example: a line 0-1-2-3 has chain 3; a star with centre 0 and leaves 1, 2, 3 has chain 2.
      */
     public static int longestChain(int n, int[][] nb) {
-        // TODO Mission 5b
-        return -1;
+        int[] best = new int[1];
+        down(0, -1, nb, best);
+        return best[0];
+    }
+
+    // returns the length (in links) of the longest way down from v; updates best with the longest chain through v
+    private static int down(int v, int parent, int[][] nb, int[] best) {
+        int first = 0, second = 0;   // the two longest ways down through different children
+        for (int c : nb[v]) {
+            if (c == parent) continue;
+            int len = down(c, v, nb, best) + 1;
+            if (len > first) { second = first; first = len; }
+            else if (len > second) second = len;
+        }
+        best[0] = Math.max(best[0], first + second);
+        return first;
     }
 }

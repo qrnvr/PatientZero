@@ -50,7 +50,7 @@ For every person v (with its subtree): in[v] = the cheapest cost when v is teste
 
 ## AI use
 
-I used Claude (Anthropic's AI assistant). Claude wrote the code of Missions 1 to 5 (`Strains.java`, `Marker.java`, `Outbreak.java`), generated the data files with `tools/MakeVariant.java` from my ID, ran the program, made the screenshot, ran the benchmark, wrote the draft of the answers and of the complexity table in this README, and made the git commits (they are co-authored by Claude). I did not write this code myself. No code or text from books or websites was used.
+I used Claude (Anthropic's AI assistant). Claude wrote the code of Missions 1 to 5 (`Strains.java`, `Marker.java`, `Outbreak.java`), generated the data files with `tools/MakeVariant.java` from my ID, ran the program, made the screenshot, ran the benchmark, wrote the draft of the answers and of the complexity table in this README, and made the git commits. I did not write this code myself. No code or text from books or websites was used.
 
 ## Timing (Mission 7)
 
